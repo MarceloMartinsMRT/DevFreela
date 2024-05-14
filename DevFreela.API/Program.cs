@@ -1,3 +1,5 @@
+using DevFreela.API.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +9,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<OpeningTimeOptions>(builder.Configuration.GetSection("OpeningTime"));
+
+builder.Services.AddSingleton<ExampleClass>(e => new ExampleClass { name = "Initial Stage" });
+builder.Services.AddScoped<ExampleClass>(e => new ExampleClass { name = "Initial Stage" });
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -15,6 +23,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//builder.Services.Configure<OpeningTimeOptions>(builder.Configuration.GetSection("OpeningTime"));
 
 app.UseHttpsRedirection();
 
