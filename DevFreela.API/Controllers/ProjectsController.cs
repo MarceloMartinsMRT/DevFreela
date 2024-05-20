@@ -1,19 +1,18 @@
 ﻿using DevFreela.API.Models;
+using DevFreela.Application.InputModels;
+using DevFreela.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System.Runtime.CompilerServices;
 
 namespace DevFreela.API.Controllers
 {
     [Route("api/projects")]
     public class ProjectsController : ControllerBase
     {
-        private readonly OpeningTimeOptions _options;
+        private readonly IProjectService _projectService;
 
-        public ProjectsController(IOptions<OpeningTimeOptions> option, ExampleClass exampleClass)
+        public ProjectsController(IProjectService projectService)
         {
-            exampleClass.name = "Updated at ProjectsController";
-            _options = option.Value;
+            _projectService = projectService;
         }
 
         //api/projects?query=netcore
@@ -21,7 +20,8 @@ namespace DevFreela.API.Controllers
         public IActionResult Get(string query)
         {
             // buscar todos/listar
-            return Ok();
+            var projects = _projectService.GetAll(query);
+            return Ok(projects);
         }
 
         // api/projects/599
@@ -31,35 +31,47 @@ namespace DevFreela.API.Controllers
 
             //Buscar o projeto
             //return NotFound();
-            return Ok();
+
+            var project = _projectService.GetById(id);
+
+            if(project == null) 
+            {
+                return NotFound();
+            }
+
+            return Ok(project);
 
         }
 
         [HttpPost]
         public IActionResult Post(
-            [FromBody] CreateProjectModel createProject)
+            [FromBody] NewProjectInputModel inputModel)
         {
-            if (createProject.Title.Length > 50)
+            if (inputModel.Title.Length > 50)
             {
                 return BadRequest();
             }
 
+            var id = _projectService.Create(inputModel);
+
             //cadastrar o projeto
 
-            return CreatedAtAction(nameof(GetById), new { id = createProject.Id }, createProject);
+            return CreatedAtAction(nameof(GetById), new { Id = id }, inputModel);
         }
 
         //api/projects/2
         [HttpPut("id")]
         public IActionResult Put(int id,
-            [FromBody] UpdateProjectModel updateProject)
+            [FromBody] UpdateProjectInputModel inputModel)
         {
-            if (updateProject.Description.Length > 200)
+            if (inputModel.Description.Length > 200)
             {
                 return BadRequest();
             }
 
             //atualizo o objeto
+
+            _projectService.Update(inputModel);
 
             return NoContent();
         }
@@ -73,14 +85,17 @@ namespace DevFreela.API.Controllers
 
             //remover
 
+            _projectService.Delete(id);
 
             return NoContent();
         }
 
         // api/projects/1/comments
         [HttpPost("{id}/comments")]
-        public IActionResult PostComment([FromBody] CreateCommentModel createCommentModel)
+        public IActionResult PostComment([FromBody] CreateCommentInputModel inputModel)
         {
+            _projectService.CreateComment(inputModel);
+
             return NoContent();
         }
 
@@ -88,6 +103,8 @@ namespace DevFreela.API.Controllers
         [HttpPut("{id}/start")]
         public IActionResult Start(int id)
         {
+            _projectService.Start(id);
+
             return NoContent();
 
         }
@@ -96,6 +113,8 @@ namespace DevFreela.API.Controllers
         [HttpPut("{id}/finish")]
         public IActionResult Finish(int id)
         {
+            _projectService.Finish(id);
+
             return NoContent();
         }
     }
