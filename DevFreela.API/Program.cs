@@ -1,6 +1,4 @@
-using DevFreela.API.Models;
-using DevFreela.Application.Services.Implementations;
-using DevFreela.Application.Services.Interfaces;
+using DevFreela.Application.Commands.CreateProject;
 using DevFreela.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,12 +14,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DevFreelaCs");
 builder.Services.AddDbContext<DevFreelaDBContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.Configure<OpeningTimeOptions>(builder.Configuration.GetSection("OpeningTime"));
-
-//builder.Services.AddSingleton<ExampleClass>(e => new ExampleClass { name = "Initial Stage" });
-builder.Services.AddScoped<ExampleClass>(e => new ExampleClass { name = "Initial Stage" });
-//builder.Services.AddSingleton<DevFreelaDBContext>();
-builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddMediatR(opt => opt.RegisterServicesFromAssemblyContaining(typeof(CreateProjectCommand)));
 
 
 var app = builder.Build();
@@ -33,7 +26,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//builder.Services.Configure<OpeningTimeOptions>(builder.Configuration.GetSection("OpeningTime"));
 
 app.UseHttpsRedirection();
 
