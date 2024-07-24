@@ -59,8 +59,15 @@ namespace DevFreela.API.Controllers
             [FromBody] CreateProjectCommand command)
         {
 
-            if (command.Title.Length > 50)
-                return BadRequest();
+            if (!ModelState.IsValid) //Verifica os validators do CreateUserCommand
+            {
+                var messages = ModelState
+                                .SelectMany(ms => ms.Value.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+
+                return BadRequest(messages);
+            }
 
             var id = _mediator.Send(command);
 
@@ -71,9 +78,14 @@ namespace DevFreela.API.Controllers
         public async Task<IActionResult> Put(int id,
             [FromBody] UpdateProjectCommand command)
         {
-            if (command.Description.Length > 200)
+            if (!ModelState.IsValid) //Verifica os validators do CreateUserCommand
             {
-                return BadRequest();
+                var messages = ModelState
+                                .SelectMany(ms => ms.Value.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+
+                return BadRequest(messages);
             }
 
             //atualizo o objeto
@@ -102,6 +114,17 @@ namespace DevFreela.API.Controllers
         [HttpPost("{id}/comments")]
         public async Task<IActionResult> PostComment([FromBody] CreateCommentCommand command)
         {
+
+            if (!ModelState.IsValid) //Verifica os validators do CreateUserCommand
+            {
+                var messages = ModelState
+                                .SelectMany(ms => ms.Value.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+
+                return BadRequest(messages);
+            }
+
             await _mediator.Send(command);
             return NoContent();
         }
