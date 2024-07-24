@@ -14,11 +14,11 @@ namespace DevFreela.API.Controllers
 
         public UsersController(IMediator mediator)
         {
-            _mediator = mediator; 
+            _mediator = mediator;
         }
-            // api/users/1
-            [HttpGet("id")]
-        public async Task<IActionResult> GetById(int id) 
+        // api/users/1
+        [HttpGet("id")]
+        public async Task<IActionResult> GetById(int id)
         {
             var query = new GetUserQuery(id);
 
@@ -31,24 +31,15 @@ namespace DevFreela.API.Controllers
 
         // api/users
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CreateUserCommand command) 
+        public async Task<IActionResult> Post([FromBody] CreateUserCommand command)
         {
-            if (!ModelState.IsValid) //Verifica os validators do CreateUserCommand
-            {
-                var messages = ModelState
-                                .SelectMany(ms => ms.Value.Errors)
-                                .Select(e => e.ErrorMessage)
-                                .ToList();
-
-                return BadRequest(messages);
-            }
             var id = await _mediator.Send(command);
 
-            return CreatedAtAction(nameof(GetById), new {Id = id}, command);
+            return CreatedAtAction(nameof(GetById), new { Id = id }, command);
         }
 
         [HttpPut("{id}/login")]
-        public IActionResult Login(int id, LoginModel login) 
+        public IActionResult Login(int id, LoginModel login)
         {
             return NoContent();
         }

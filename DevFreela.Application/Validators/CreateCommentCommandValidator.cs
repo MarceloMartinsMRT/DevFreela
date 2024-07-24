@@ -10,7 +10,7 @@ namespace DevFreela.Application.Validators
 {
     public class CreateCommentCommandValidator : AbstractValidator<CreateCommentCommand>
     {
-        public CreateCommentCommandValidator() 
+        public CreateCommentCommandValidator()
         {
             RuleFor(p => p.Content)
                 .MaximumLength(255)

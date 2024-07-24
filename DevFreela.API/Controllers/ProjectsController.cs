@@ -58,17 +58,6 @@ namespace DevFreela.API.Controllers
         public async Task<IActionResult> Post(
             [FromBody] CreateProjectCommand command)
         {
-
-            if (!ModelState.IsValid) //Verifica os validators do CreateUserCommand
-            {
-                var messages = ModelState
-                                .SelectMany(ms => ms.Value.Errors)
-                                .Select(e => e.ErrorMessage)
-                                .ToList();
-
-                return BadRequest(messages);
-            }
-
             var id = _mediator.Send(command);
 
             return CreatedAtAction(nameof(GetById), new { Id = id }, command);
@@ -78,16 +67,6 @@ namespace DevFreela.API.Controllers
         public async Task<IActionResult> Put(int id,
             [FromBody] UpdateProjectCommand command)
         {
-            if (!ModelState.IsValid) //Verifica os validators do CreateUserCommand
-            {
-                var messages = ModelState
-                                .SelectMany(ms => ms.Value.Errors)
-                                .Select(e => e.ErrorMessage)
-                                .ToList();
-
-                return BadRequest(messages);
-            }
-
             //atualizo o objeto
 
             _mediator.Send(command);
@@ -114,17 +93,6 @@ namespace DevFreela.API.Controllers
         [HttpPost("{id}/comments")]
         public async Task<IActionResult> PostComment([FromBody] CreateCommentCommand command)
         {
-
-            if (!ModelState.IsValid) //Verifica os validators do CreateUserCommand
-            {
-                var messages = ModelState
-                                .SelectMany(ms => ms.Value.Errors)
-                                .Select(e => e.ErrorMessage)
-                                .ToList();
-
-                return BadRequest(messages);
-            }
-
             await _mediator.Send(command);
             return NoContent();
         }
@@ -146,7 +114,6 @@ namespace DevFreela.API.Controllers
         public async Task<IActionResult> Finish(int id)
         {
             var command = new FinishProjectCommand(id);
-
 
             await _mediator.Send(command);
 
